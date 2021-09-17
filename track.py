@@ -153,11 +153,10 @@ def detect(opt):
                             bbox_w = output[2] - output[0]
                             bbox_h = output[3] - output[1]
                             # Write MOT compliant results to file
-
                             if len(data) == 0:
                                 with open(txt_path, 'a') as f:
-                                    f.write(('%g ' * 10 + '\n') % (frame_idx, id, bbox_left,
-                                                                bbox_top, bbox_w, bbox_h, -1, -1, -1, -1, "A"))  # label format
+                                    f.write(('%g ' * 10 + 'A\n') % (frame_idx, id, bbox_left,
+                                                                bbox_top, bbox_w, bbox_h, -1, -1, -1, -1))  # label format
                             else:
                                 _roi = "-"
                                 for d in data:
@@ -165,9 +164,8 @@ def detect(opt):
 
 
                                 with open(txt_path, 'a') as f:
-                                    f.write(('%g ' * 10 + '\n') % (frame_idx, id, bbox_left,
-                                                                bbox_top, bbox_w, bbox_h, -1, -1, -1, -1, _roi))  # label format
-
+                                    f.write(('%g ' * 10 + _roi+'\n') % (frame_idx, id, bbox_left,
+                                                                bbox_top, bbox_w, bbox_h, -1, -1, -1, -1))  # label format
             else:
                 deepsort.increment_ages()
 
