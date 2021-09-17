@@ -18,12 +18,19 @@ from pathlib import Path
 import cv2
 import torch
 import torch.backends.cudnn as cudnn
-
+import json
 
 def detect(opt):
     out, source, yolo_weights, deep_sort_weights, show_vid, save_vid, save_txt, imgsz, evaluate = \
         opt.output, opt.source, opt.yolo_weights, opt.deep_sort_weights, opt.show_vid, opt.save_vid, \
             opt.save_txt, opt.img_size, opt.evaluate
+
+    roi_file_path = opt.roi_file_path
+
+    data = []
+    with open(roi_file_path) as f:
+        data = json.load(f)
+
     webcam = source == '0' or source.startswith(
         'rtsp') or source.startswith('http') or source.endswith('.txt')
 
@@ -146,9 +153,20 @@ def detect(opt):
                             bbox_w = output[2] - output[0]
                             bbox_h = output[3] - output[1]
                             # Write MOT compliant results to file
-                            with open(txt_path, 'a') as f:
-                               f.write(('%g ' * 10 + '\n') % (frame_idx, id, bbox_left,
-                                                           bbox_top, bbox_w, bbox_h, -1, -1, -1, -1))  # label format
+
+                            if len(data) == 0:
+                                with open(txt_path, 'a') as f:
+                                    f.write(('%g ' * 10 + '\n') % (frame_idx, id, bbox_left,
+                                                                bbox_top, bbox_w, bbox_h, -1, -1, -1, -1, "A"))  # label format
+                            else:
+                                _roi = "-"
+                                for d in data:
+                                    ploy = d["ploygon"]
+
+
+                                with open(txt_path, 'a') as f:
+                                    f.write(('%g ' * 10 + '\n') % (frame_idx, id, bbox_left,
+                                                                bbox_top, bbox_w, bbox_h, -1, -1, -1, -1, _roi))  # label format
 
             else:
                 deepsort.increment_ages()
@@ -194,6 +212,7 @@ if __name__ == '__main__':
     parser.add_argument('--deep_sort_weights', type=str, default='deep_sort_pytorch/deep_sort/deep/checkpoint/ckpt.t7', help='ckpt.t7 path')
     # file/folder, 0 for webcam
     parser.add_argument('--source', type=str, default='0', help='source')
+    parser.add_argument('--roi-file-path', type=str, help='path to roi json file')
     parser.add_argument('--output', type=str, default='inference/output', help='output folder')  # output folder
     parser.add_argument('--img-size', type=int, default=640, help='inference size (pixels)')
     parser.add_argument('--conf-thres', type=float, default=0.4, help='object confidence threshold')
