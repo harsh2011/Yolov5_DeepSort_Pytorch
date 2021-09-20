@@ -96,8 +96,8 @@ def detect(opt):
     _pname = []
     _poly = []
     for d in data:
-        _pname,append(d["name"])
-        _poly.append(Polygon(d["ploygon"]))
+        _pname.append(d["name"])
+        _poly.append(Polygon(d["polygon"]))
 
     for frame_idx, (path, img, im0s, vid_cap) in enumerate(dataset):
         img = torch.from_numpy(img).to(device)
