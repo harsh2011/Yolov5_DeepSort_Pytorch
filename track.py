@@ -171,10 +171,14 @@ def detect(opt):
                             bbox_top = output[1]
                             bbox_w = output[2] - output[0]
                             bbox_h = output[3] - output[1]
+
+
+                            det_point_x = int(output[3])
+                            det_point_y = int((output[1]+output[2])/2)
                             # Write MOT compliant results to file
                             with open(txt_path, 'a') as f:
-                                f.write(('%g ' * 10 + sec+'\n') % (frame_idx, id, bbox_left,
-                                                            bbox_top, bbox_w, bbox_h, -1, -1, -1, -1))  # label format
+                                f.write(('%g ' * 12 + sec+'\n') % (frame_idx, id, bbox_left,
+                                                            bbox_top, bbox_w, bbox_h, det_point_x, det_point_y, -1, -1, -1, -1))  # label format
             else:
                 deepsort.increment_ages()
 
